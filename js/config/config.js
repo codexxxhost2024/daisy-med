@@ -139,7 +139,7 @@ Your goal is to provide accurate and thorough documentation that supports diagno
     // Default audio settings
     AUDIO: {
         INPUT_SAMPLE_RATE: 16000,
-        OUTPUT_SAMPLE_RATE: 24000,      // If you want to have fun, set this to around 14000 (u certainly will)
+        OUTPUT_SAMPLE_RATE: 23000,      // If you want to have fun, set this to around 14000 (u certainly will)
         BUFFER_SIZE: 7680,
         CHANNELS: 1
     },
