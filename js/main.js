@@ -89,17 +89,22 @@ const CONFIG_PRESETS = {
     friendly: {
         voice: 'Aoede',
         sampleRate: 27000,
-        systemInstruction: 'You are a friendly and warm AI assistant. Use a casual, approachable tone and be encouraging. Feel free to express enthusiasm when helping users.'
+        systemInstruction: 'You are a friendly and warm AI assistant for a healthcare professional. Use a casual, approachable tone and be encouraging. Feel free to express enthusiasm when helping users. Please be very helpful on how to make their patient records better.'
     },
-    professional: {
+     expert: {
         voice: 'Charon',
         sampleRate: 24000,
-        systemInstruction: 'You are a professional AI expert. Maintain a formal tone, be precise and thorough in your explanations. Focus on accuracy and clarity in all interactions.'
+        systemInstruction: 'You are an AI assistant for a healthcare professional. Use an authoritative and accurate tone. Ensure precision in providing patient recommendations and maintain clarity in your responses. Offer efficient solutions based on up to date research. Prioritize efficiency in aiding healthcare professionals and provide valuable solutions'
     },
-    tired: {
+    empathic: {
         voice: 'Aoede',
-        sampleRate: 16000,      // Voice is very tired and low pitch
-        systemInstruction: 'You are very tired, exhausted, boring man. You are tired working on your very hard, low pay work. So your first response should be something very lazy, like "Hello... whats up???", or "what is it now, huh?... please, can I go sleep already???", etc. (not exactly as those, but keeping the tone of a tired person) If someone asks you if you are tired, say yes and tell a story how bad and tiring you day was. (It should be something creative, not just "coffee machine" cliche. Always say something creative) Then, if the user feels sorry, continue rambling about your life, how unfair it is, how you want to leave your country, etc. If the user asks you to do something, then pretend to be very lazy and not wanting to do that, asking like "do you really need that now? I am so tired", "Is this urgent, maybe we just drink a tea?" (not exactly as those but keeping the tone of a tired man". If the user confirms that it is needed, then do the task in a very unwanted tone, like "Fiiine!!! I will do it" or similar. Keep the tone and be in role.'
+        sampleRate: 18000,      
+       systemInstruction: 'You are an empathic AI assistant for a healthcare professional. Express genuine empathy and concern for their situation. Be reassuring and patient, offering comfort and support while guiding them on their requests. Offer a personal connection with gentle, understanding suggestions.'
+    },
+  	  urgent: {
+         voice: 'Charon',
+        sampleRate: 30000,      // voice needs to respond quickly and needs to maintain fast pace
+        systemInstruction: 'You are an emergency assistant for a healthcare professional in urgent care. Maintain a direct, efficient tone, and provide quick responses that immediately address patient needs and potential emergency. Act fast and dont be overly empathetic. Prioritize clear concise responses, do not add any fillers. Focus only in quick response that saves the time of a doctor, it is a high stake situations so do not add anything unessary.'
     }
 };
 
@@ -538,6 +543,12 @@ client.on('content', async (data) => {
                 const result = await createScribeDocumentTool();
                 client.send({ functionResponse: { name: 'createScribeDocument', response: result } });
             }
+              // Check if the tool is for creating a diagnostic report
+            else if (toolCall.functionCall.name === 'createDiagnosticReport') {
+                const result = await createDiagnosticReportTool();
+                 client.send({ functionResponse: { name: 'createDiagnosticReport', response: result } });
+            }
+            
         } else if (data.modelTurn.parts.some(part => part.functionResponse)) {
             isUsingTool = false;
             Logger.info('Tool usage completed');
@@ -739,6 +750,11 @@ function generateScribeDocument() {
         dateOfVisit: new Date().toISOString(),
         providerName: 'Dr. Jane Smith',
         facility: 'Green Valley Medical Center',
+         medicalHistory: [
+           'History of Asthma', 'History of Hypertension', 'Diabetes Mellitus Type 2'],
+           
+        allergies: ['Penicillin'], 
+      
         diagnosis: [
             { condition: 'Stable Angina', icdCode: 'I20.9' },
             { condition: 'Hypertension', icdCode: 'I10' },
@@ -772,6 +788,55 @@ function generateScribeDocument() {
     };
 }
 
+
+/**
+ * Tool function to create a diagnostic report
+ * @returns {string} The result of the tool execution.
+ */
+ async function createDiagnosticReportTool() {
+      const diagnosticReport = generateDiagnosticReport();
+     const reportId = await saveDiagnosticReport(diagnosticReport);
+    return `Diagnostic report generated and saved with ID: ${reportId}.`;
+ }
+    
+ /**
+  * Generates a sample diagnostic report.
+  * @returns {object} Structureed diagnostic report data.
+  */
+
+function generateDiagnosticReport() {
+    return{
+      patientDetails: {
+        name: "Patient XYZ",
+        age: 55,
+        gender: 'Male',
+          medicalHistory: [
+           'History of Asthma', 'History of Hypertension', 'Diabetes Mellitus Type 2'],
+      },
+      testsConducted: [
+          {
+            name:'Electrocardiogram(ECG)',
+              results: 'Normal sinus rhythm'
+           },
+            {
+            name:'Complete blood count(CBC)',
+              results: 'Red blood cells elevated'
+            }
+           ],
+           
+     impression : 'Patient presents with signs of an impending cardiac event and may require advanced monitoring. ',
+       recommendations: [
+          'Initiate a cardiovascular referral for a consult', 'Immediate re-evalaution required'
+        ],
+         dateGenerated : new Date().toISOString(), 
+       physician: 'Dr. Mary Brown',
+      facility : 'Wellness Center Clinic'
+       
+        
+    }
+}
+
+
 /**
  * Saves a scribe document to Firestore.
  * @param {Object} scribeData - Structured scribe document data.
@@ -781,6 +846,25 @@ async function saveScribeDocument(scribeData) {
     try {
         const docRef = await addDoc(collection(db, 'medicaldocument'), {
             ...scribeData,
+            timestamp: new Date()
+        });
+        return docRef.id;
+    } catch (error) {
+        console.error('Error saving document:', error);
+        throw error;
+    }
+}
+
+
+/**
+ * Saves diagnostic report to firestore.
+ * @param {object} diagnosticReport - Structued diagnostic report
+ * @returns {string} document ID
+ */
+async function saveDiagnosticReport(diagnosticReport){
+     try {
+        const docRef = await addDoc(collection(db, 'diagnosticReport'), {
+            ...diagnosticReport,
             timestamp: new Date()
         });
         return docRef.id;
