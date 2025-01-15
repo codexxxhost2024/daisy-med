@@ -134,7 +134,7 @@ Your goal is to provide accurate and thorough documentation that supports diagno
     },
     // Model's voice
     VOICE: {
-        NAME: 'Kore' // You can choose one from: Puck, Charon, Kore, Fenrir, Aoede (Kore and Aoede are female voices, rest are male)
+        NAME: 'Aoede' // You can choose one from: Puck, Charon, Kore, Fenrir, Aoede (Kore and Aoede are female voices, rest are male)
     },
     // Default audio settings
     AUDIO: {
