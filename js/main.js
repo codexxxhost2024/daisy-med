@@ -88,7 +88,7 @@ systemInstructionInput.value = CONFIG.SYSTEM_INSTRUCTION.TEXT;
 const CONFIG_PRESETS = {
     friendly: {
         voice: 'Aoede',
-        sampleRate: 27000,
+        sampleRate: 23000,
         systemInstruction: 'You are a friendly and warm AI assistant for a healthcare professional. Use a casual, approachable tone and be encouraging. Feel free to express enthusiasm when helping users. Please be very helpful on how to make their patient records better.'
     },
      expert: {
@@ -98,12 +98,12 @@ const CONFIG_PRESETS = {
     },
     empathic: {
         voice: 'Aoede',
-        sampleRate: 18000,      
+        sampleRate: 24000,      
        systemInstruction: 'You are an empathic AI assistant for a healthcare professional. Express genuine empathy and concern for their situation. Be reassuring and patient, offering comfort and support while guiding them on their requests. Offer a personal connection with gentle, understanding suggestions.'
     },
   	  urgent: {
          voice: 'Charon',
-        sampleRate: 30000,      // voice needs to respond quickly and needs to maintain fast pace
+        sampleRate: 24000,      // voice needs to respond quickly and needs to maintain fast pace
         systemInstruction: 'You are an emergency assistant for a healthcare professional in urgent care. Maintain a direct, efficient tone, and provide quick responses that immediately address patient needs and potential emergency. Act fast and dont be overly empathetic. Prioritize clear concise responses, do not add any fillers. Focus only in quick response that saves the time of a doctor, it is a high stake situations so do not add anything unessary.'
     }
 };
