@@ -5,7 +5,500 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Medical Scriber</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
-    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Modern UI Styling */
+        body {
+            font-family: sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        #app {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            display: flex;
+            flex-direction: column;
+            max-width: 900px;
+            width: 95%;
+            overflow: hidden; /* Prevents overflowing content */
+        }
+        
+        .main-controls {
+            display: flex;
+            justify-content: flex-end;
+             background: #e9ecef;
+             padding: 10px;
+              border-bottom: 1px solid #dee2e6;
+        }
+
+
+       .main-controls button {
+            margin: 0 5px;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            background: #fff;
+            color: #495057;
+            font-size: 14px;
+             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease;
+        }
+         .main-controls button.connected{
+                background-color: #5cb85c;
+                color: #fff;
+        }
+
+         .main-controls button:hover{
+                background-color: #e0e0e0;
+        }
+      
+          .main-controls button.material-symbols-outlined {
+              padding: 5px;
+        }
+          .main-controls button:focus{
+              outline:none;
+          }
+
+
+         /* Config Panel Styles */
+         #config-container {
+            display: none;
+            padding: 20px;
+            background-color: #fff;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+             border-bottom: 1px solid #dee2e6;
+            transition: height 0.3s ease-out;
+           z-index:1000; /* Ensures it appears above all else*/
+         }
+
+        #config-container.active{
+            display: block;
+             position: relative;
+
+        }
+        #config-container.hidden-mobile{
+            position: absolute;
+              right: 0;
+            top: 60px; /*  adjust as needed to not cover */
+             width: 400px;
+               height: auto;
+          max-height: 600px;
+             border: 1px solid #dee2e6;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+            display: none;
+            background: #fff;
+            
+           
+        }
+
+    @media (max-width: 768px) {
+          #config-container.hidden-mobile{
+                width: 100%;
+            height: auto;
+              position: relative;
+              top: auto;
+              right:auto;
+               border:none;
+                max-height: fit-content;
+
+            }
+
+    }
+
+
+
+        #config-container .config-wrapper {
+          display: flex;
+            flex-direction: column;
+           gap:10px;
+
+
+        }
+
+      
+        #config-container h3{
+          color: #6c757d;
+        }
+          
+      #config-container .preset-sets {
+          display:flex;
+           flex-direction:column;
+
+        }
+
+        #config-container .preset-buttons {
+              display:flex;
+                flex-wrap:wrap;
+            gap:10px;
+           
+        }
+
+         #config-container .preset-button {
+            background-color: #f8f9fa;
+             border-radius: 4px;
+             border: none;
+              box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+               cursor: pointer;
+                color: #495057;
+            padding: 10px 12px;
+                 transition: background-color 0.3s ease;
+              font-size:13px;
+                flex-basis: calc(33.333% - 10px);
+
+
+        }
+
+
+       #config-container .preset-button:hover{
+                background-color:#e0e0e0;
+        }
+
+          #config-container select {
+            padding: 8px;
+             border-radius: 4px;
+            border: 1px solid #ced4da;
+               background-color: #f8f9fa;
+
+          
+         }
+    #config-container .sample-rate-container{
+      display: flex;
+        flex-direction: column;
+
+      }
+
+    #config-container .sample-rate-container input{
+        padding: 8px;
+          border: 1px solid #ced4da;
+           border-radius: 4px;
+            background-color: #f8f9fa;
+
+    }
+
+
+     #config-container .sample-rate-container .sample-rate-help {
+        color: #6c757d;
+        font-size: 12px;
+          text-align: left;
+
+    }
+
+
+
+         #config-container textarea{
+                padding: 8px;
+                border-radius: 4px;
+                 border: 1px solid #ced4da;
+               background-color: #f8f9fa;
+
+
+         }
+
+
+          #config-container button {
+            padding: 10px 15px;
+               border: none;
+           border-radius: 4px;
+            background-color: #4285f4;
+               color: #fff;
+            cursor: pointer;
+           transition: background-color 0.3s ease;
+
+        }
+
+        #config-container button:hover{
+            background-color: #3367d6;
+         }
+
+
+        /* Chat Interface Styles */
+         .chat-interface {
+            display: flex;
+              border-bottom: 1px solid #dee2e6;
+            flex-direction: column;
+             height: 400px;  /* Adjusted to match design */
+            padding: 10px;
+          flex-grow: 1;
+            overflow:hidden;
+
+
+
+        }
+
+         .logs-wrapper {
+           flex-grow: 1; /* Fill available space */
+              display: flex;
+               flex-direction: column;
+                overflow: hidden;
+
+            }
+
+       .logs-header{
+           background-color: #e9ecef;
+         padding: 8px;
+           margin-bottom:10px;
+            display: flex;
+          justify-content: space-between;
+
+           border-radius:4px;
+
+         }
+
+         .logs-header button{
+               padding:5px;
+            background-color: transparent;
+            cursor: pointer;
+            border: none;
+
+
+        }
+
+
+        .logs-header span {
+              font-weight: bold;
+            }
+
+
+         .logs-wrapper #logs-container{
+                 overflow-y: scroll;
+               padding:10px;
+                flex-grow:1; /* Make the container scroll */
+              height: 300px; /*  fixed to scroll inside container*/
+             
+
+            }
+
+
+         .logs-wrapper #logs-container::-webkit-scrollbar {
+        width: 8px;
+      }
+
+        /* Track */
+      .logs-wrapper #logs-container::-webkit-scrollbar-track {
+         background: #f1f1f1;
+            }
+        /* Handle */
+      .logs-wrapper #logs-container::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 4px;
+         }
+
+         /* Handle on hover */
+         .logs-wrapper #logs-container::-webkit-scrollbar-thumb:hover {
+        background: #555;
+        }
+
+
+
+
+      .logs-wrapper.collapsed #logs-container{
+          display: none;
+           height: 0; /* reduce it when collaspe*/
+            }
+
+       .logs-wrapper.collapsed .logs-header{
+           border-radius: 4px 4px 0 0; /* top corners for colapse */
+            }
+
+
+           .log-entry {
+            margin-bottom: 8px;
+            padding: 8px;
+              background-color: #f8f9fa;
+             border-radius: 4px;
+            display: flex;
+          align-items: center;
+
+            font-size:14px;
+
+         }
+            .log-entry.user {
+                background-color: #d4edda;
+            }
+
+
+            .log-entry.ai{
+                background-color:#cce5ff;
+             }
+
+           .log-entry .timestamp{
+            margin-right: 8px;
+               font-size: 12px;
+             color: #6c757d;
+
+
+            }
+       .log-entry .emoji{
+         margin-right: 8px;
+        }
+
+
+        .input-controls {
+            display: flex;
+            align-items: center;
+               padding: 10px;
+               border-top: 1px solid #dee2e6;
+              background: #e9ecef;
+
+            
+            
+        }
+      .input-controls input{
+        padding: 8px;
+        flex-grow: 1; /* Input to fill the width */
+           border: 1px solid #ced4da;
+             border-radius: 4px;
+          background: #f8f9fa;
+
+            margin-right:10px;
+        }
+
+        .action-buttons {
+            display: flex;
+            align-items: center; /* Align buttons vertically */
+
+        }
+     .action-buttons button {
+            margin: 0 5px;
+            padding: 8px 12px;
+              border: none;
+           border-radius: 4px;
+              cursor: pointer;
+           background-color:#fff;
+          color:#495057;
+
+               transition: background-color 0.3s ease;
+          box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+
+
+        }
+
+         .action-buttons button:hover{
+           background-color:#e0e0e0;
+         }
+       .action-buttons button .material-symbols-outlined{
+         padding:0px;
+        }
+    .action-buttons button#mic-button.active{
+     background-color:#ea4335 ;
+        color:#fff;
+        }
+         .action-buttons button#camera-button.active{
+         background-color: #ea4335;
+        color:#fff;
+        }
+
+        /* Audio Visualizer */
+
+     .audio-visualizers {
+            display: flex;
+            padding: 10px;
+           gap: 10px;
+
+
+        }
+
+        .visualizer-container{
+           flex:1; /* Make audio and output expand */
+           padding:10px;
+
+            border-radius: 8px;
+            border: 1px solid #dee2e6;
+
+
+          display: flex;
+          flex-direction:column;
+
+
+
+          }
+     .visualizer-container label{
+          margin-bottom: 10px;
+          font-size: 14px;
+
+          }
+
+
+     .visualizer-container div{
+             height: 30px; /* Fixed visualizer size */
+             background: #f8f9fa; /*Background of the audio wave*/
+               border-radius:4px;
+         overflow:hidden;
+
+        }
+
+      .visualizer-container div .audio-bar {
+        background-color: #4285f4; /* Audio wave color*/
+        height: 100%;
+         width:0;
+          border-radius:4px;
+            transition: width 0.2s ease-in;
+
+      }
+
+      .visualizer-container div .audio-bar.active{
+       width:auto;
+
+      }
+
+
+          /*Video Player */
+      #video-container {
+              width: 100%;
+                display:none;
+             padding: 10px;
+               display: flex;
+            flex-direction:column;
+
+      }
+
+
+     #video-container video{
+        width: 100%;
+       max-height: 400px; /* max size */
+     }
+
+      #video-container .video-controls{
+          display:flex;
+          margin-top:10px;
+         }
+
+      #video-container  .video-controls button{
+           margin: 0 auto; /*  put button at center*/
+           background-color:#ea4335 ;
+             color: #fff;
+            padding: 8px 12px;
+           border-radius: 4px;
+          border:none;
+
+             cursor: pointer;
+
+      }
+
+
+          /*Screen Player */
+         #screen-container {
+            width: 100%;
+             padding: 10px;
+           display:none;
+
+
+
+        }
+           #screen-container video{
+             width: 100%;
+
+          max-height: 400px; /* set a max limit */
+          }
+    </style>
 </head>
 <body>
     <div id="app">
