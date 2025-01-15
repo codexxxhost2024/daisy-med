@@ -5,11 +5,8 @@ import { CONFIG } from './config/config.js';
 import { Logger } from './utils/logger.js';
 import { VideoManager } from './video/video-manager.js';
 import { ScreenRecorder } from './video/screen-recorder.js';
-
-/**
- * @fileoverview Main entry point for the application.
- * Initializes and manages the UI, audio, video, and WebSocket interactions.
- */
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
+import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
 
 // DOM Elements
 const logsContainer = document.getElementById('logs-container');
@@ -63,6 +60,21 @@ let videoManager = null;
 let isScreenSharing = false;
 let screenRecorder = null;
 let isUsingTool = false;
+
+// Initialize Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyDTsjYZNWFfZOESP-2QQfbD7jc5fG9FJdc",
+  authDomain: "explore-malaysia-6d28d.firebaseapp.com",
+  databaseURL: "https://explore-malaysia-6d28d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "explore-malaysia-6d28d",
+  storageBucket: "explore-malaysia-6d28d.appspot.com",
+  messagingSenderId: "869053244601",
+  appId: "1:869053244601:web:79ddd74f5bd792a10be768",
+  measurementId: "G-9W4D5NM49R"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
 
 // Multimodal Client
 const client = new MultimodalLiveClient({ apiKey: CONFIG.API.KEY });
@@ -155,7 +167,6 @@ if (localStorage.getItem('gemini_system_instruction')) {
 
 // Add event listener for configuration changes
 applyConfigButton.addEventListener('click', updateConfiguration);
-
 
 // Handle configuration panel toggle
 configToggle.addEventListener('click', () => {
@@ -515,11 +526,18 @@ client.on('audio', async (data) => {
     }
 });
 
-client.on('content', (data) => {
+client.on('content', async (data) => {
     if (data.modelTurn) {
         if (data.modelTurn.parts.some(part => part.functionCall)) {
             isUsingTool = true;
             Logger.info('Model is using a tool');
+
+            // Check if the tool is for creating a scribe document
+            const toolCall = data.modelTurn.parts.find(part => part.functionCall);
+            if (toolCall.functionCall.name === 'createScribeDocument') {
+                const result = await createScribeDocumentTool();
+                client.send({ functionResponse: { name: 'createScribeDocument', response: result } });
+            }
         } else if (data.modelTurn.parts.some(part => part.functionResponse)) {
             isUsingTool = false;
             Logger.info('Tool usage completed');
@@ -700,4 +718,74 @@ function stopScreenSharing() {
 
 screenButton.addEventListener('click', handleScreenShare);
 screenButton.disabled = true;
-  
+
+/**
+ * Tool function to create a scribe document.
+ * @returns {string} The result of the tool execution.
+ */
+async function createScribeDocumentTool() {
+    const scribeData = generateScribeDocument();
+    const docId = await saveScribeDocument(scribeData);
+    return `Scribe document generated and saved with ID: ${docId}.`;
+}
+
+/**
+ * Generates a sample scribe document.
+ * @returns {Object} Structured scribe document data.
+ */
+function generateScribeDocument() {
+    return {
+        patientName: 'John Doe',
+        dateOfVisit: new Date().toISOString(),
+        providerName: 'Dr. Jane Smith',
+        facility: 'Green Valley Medical Center',
+        diagnosis: [
+            { condition: 'Stable Angina', icdCode: 'I20.9' },
+            { condition: 'Hypertension', icdCode: 'I10' },
+            { condition: 'Type 2 Diabetes Mellitus', icdCode: 'E11.9' }
+        ],
+        plan: `
+1. Continue current medications.
+2. Start low-dose aspirin 81 mg daily.
+3. Schedule stress test and echocardiogram.
+4. Follow up in 1 week.
+`,
+        content: `
+**Patient Name:** John Doe  
+**Date of Visit:** October 25, 2023  
+**Provider Name:** Dr. Jane Smith  
+**Facility:** Green Valley Medical Center  
+
+**OS:** The patient is a 65-year-old male presenting with chest pain and shortness of breath.  
+
+**Diagnosis:**  
+1. Stable Angina (ICD-10: I20.9)  
+2. Hypertension (ICD-10: I10)  
+3. Type 2 Diabetes Mellitus (ICD-10: E11.9)  
+
+**Plan:**  
+1. Continue current medications.  
+2. Start low-dose aspirin 81 mg daily.  
+3. Schedule stress test and echocardiogram.  
+4. Follow up in 1 week.  
+`
+    };
+}
+
+/**
+ * Saves a scribe document to Firestore.
+ * @param {Object} scribeData - Structured scribe document data.
+ * @returns {string} Document ID.
+ */
+async function saveScribeDocument(scribeData) {
+    try {
+        const docRef = await addDoc(collection(db, 'medicaldocument'), {
+            ...scribeData,
+            timestamp: new Date()
+        });
+        return docRef.id;
+    } catch (error) {
+        console.error('Error saving document:', error);
+        throw error;
+    }
+}
