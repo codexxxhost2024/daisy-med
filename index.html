@@ -45,9 +45,9 @@
         }
 
         .header .logo img {
-            width: 45px;
-            height: 45px;
-            border-radius: 12px; /* Curved edges */
+            width: 40px; /* Same size as connect icon */
+            height: 40px; /* Same size as connect icon */
+            border-radius: var(--border-radius);
         }
 
         .header .connection-status {
@@ -92,58 +92,36 @@
             font-size: 1.2rem;
         }
 
-        /* Video Section */
-        .video-section {
-            padding: var(--spacing-md);
-            margin: var(--spacing-md);
-            background-color: var(--surface-color);
-            border-radius: var(--border-radius);
-            box-shadow: 0 2px 4px var(--shadow-color);
-            overflow: hidden; /* Hide any overflow for a cleaner look */
-        }
-
-        .video-container {
-            position: relative;
-            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
-            height: 0;
-            overflow: hidden;
-            border-radius: var(--border-radius);
-        }
-
-        .video-container iframe {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            border: none;
-            border-radius: var(--border-radius);
-        }
-
         /* Main Content */
         .main-content {
             padding: var(--spacing-md);
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+            padding-bottom: 80px; /* Space for sticky bottom nav */
         }
 
+        /* Centered Action Buttons */
         .actions {
-            display: flex;
-            justify-content: space-around;
-            margin: var(--spacing-md) 0;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-sm);
+            max-width: 600px;
+            margin: 0 auto;
         }
 
         .action-button {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             gap: var(--spacing-sm);
-            padding: var(--spacing-md);
+            padding: var(--spacing-sm);
             background-color: var(--surface-color);
             border-radius: var(--border-radius);
             box-shadow: 0 2px 4px var(--shadow-color);
             cursor: pointer;
             transition: transform 0.2s ease;
-            flex: 1; /* Equal width for all buttons */
-            max-width: 150px; /* Prevent buttons from becoming too wide */
         }
 
         .action-button:hover {
@@ -151,70 +129,99 @@
         }
 
         .action-button .material-symbols-outlined {
-            font-size: 2rem;
+            font-size: 1.5rem; /* Smaller icons */
             color: var(--primary-color);
         }
 
         .action-button span {
-            font-size: 0.9rem;
+            font-size: 0.8rem; /* Smaller text */
             color: var(--text-secondary);
         }
 
-        /* Chat Interface */
-        .chat-interface {
+        /* Video Section */
+        .video-section {
+            padding: var(--spacing-md);
             background-color: var(--surface-color);
             border-radius: var(--border-radius);
             box-shadow: 0 2px 4px var(--shadow-color);
-            padding: var(--spacing-md);
-            margin: var(--spacing-md) 0;
+            overflow: hidden;
         }
 
-        .chat-interface .logs-header {
+        .video-scroll-container {
+            display: flex;
+            gap: var(--spacing-md);
+            overflow-x: auto;
+            padding-bottom: var(--spacing-md); /* Space for scrollbar */
+        }
+
+        .video-scroll-container::-webkit-scrollbar {
+            height: 8px;
+        }
+
+        .video-scroll-container::-webkit-scrollbar-thumb {
+            background-color: var(--primary-color);
+            border-radius: 4px;
+        }
+
+        .video-item {
+            flex: 0 0 auto;
+            width: 300px;
+            height: 180px;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            background-color: var(--background-color);
+        }
+
+        .video-item iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Audio Visualizers */
+        .audio-visualizers {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            margin-bottom: var(--spacing-md);
-            cursor: pointer; /* Make the header clickable */
+            gap: var(--spacing-md);
+            padding: var(--spacing-md);
+            background-color: var(--surface-color);
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px var(--shadow-color);
         }
 
-        .chat-interface .logs-header span {
-            font-size: 1.1rem;
-            font-weight: 500;
+        .visualizer-container {
+            flex: 1;
+            text-align: center;
         }
 
-        .chat-interface .logs-header .material-symbols-outlined {
-            transition: transform 0.3s ease; /* Smooth rotation for the icon */
+        .visualizer-container label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-sm);
         }
 
-        .chat-interface .logs-header.collapsed .material-symbols-outlined {
-            transform: rotate(180deg); /* Rotate the icon when collapsed */
-        }
-
-        .chat-interface #logs-container {
-            height: 0; /* Initially hide the logs */
-            overflow: hidden;
-            transition: height 0.3s ease; /* Smooth transition for height */
-        }
-
-        .chat-interface.expanded #logs-container {
-            height: 200px; /* Expanded height */
-            overflow-y: auto;
-            padding: var(--spacing-sm);
+        .visualizer {
+            width: 100%;
+            height: 20px;
             background-color: var(--background-color);
             border-radius: var(--border-radius);
+            overflow: hidden;
+            position: relative;
         }
 
-        .log-entry {
-            padding: var(--spacing-sm);
-            margin-bottom: var(--spacing-sm);
-            border-radius: var(--border-radius);
-            background-color: var(--surface-color);
-            box-shadow: 0 1px 2px var(--shadow-color);
+        .visualizer-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background-color: var(--primary-color);
+            transition: height 0.1s ease;
         }
 
         /* Bottom Navigation */
         .bottom-nav {
-            position: sticky;
+            position: fixed;
             bottom: 0;
             left: 0;
             right: 0;
@@ -233,58 +240,86 @@
             align-items: center;
             gap: var(--spacing-sm);
             cursor: pointer;
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .bottom-nav .nav-item.active {
+            color: var(--primary-color);
         }
 
         .bottom-nav .nav-item .material-symbols-outlined {
-            font-size: 1.5rem;
-            color: var(--text-secondary);
-        }
-
-        .bottom-nav .nav-item.active .material-symbols-outlined {
-            color: var(--primary-color);
+            font-size: 1.5rem; /* Smaller icons */
         }
 
         .bottom-nav .nav-item span {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
+            font-size: 0.8rem; /* Smaller text */
         }
 
-        .bottom-nav .nav-item.active span {
-            color: var(--primary-color);
+        /* Bottom Sheet for Settings */
+        .bottom-sheet {
+            position: fixed;
+            bottom: -100%;
+            left: 0;
+            right: 0;
+            background-color: var(--surface-color);
+            border-radius: var(--border-radius) var(--border-radius) 0 0;
+            box-shadow: 0 -2px 4px var(--shadow-color);
+            padding: var(--spacing-md);
+            transition: bottom 0.3s ease;
+            z-index: 1001;
         }
 
-        /* Medkit Icon (Elevated and Centered) */
-        .bottom-nav .nav-item.medkit {
-            transform: translateY(-30%);
-            background-color: var(--primary-color);
+        .bottom-sheet.active {
+            bottom: 0;
+        }
+
+        .bottom-sheet h3 {
+            margin-top: 0;
+            font-size: 1.2rem;
+            color: var(--text-color);
+        }
+
+        .bottom-sheet select,
+        .bottom-sheet input {
+            width: 100%;
             padding: var(--spacing-sm);
-            border-radius: 50%; /* Circular shape */
-            box-shadow: 0 4px 8px var(--shadow-color);
-            width: 56px; /* Fixed width */
-            height: 56px; /* Fixed height */
-            display: flex; /* Center the icon inside */
-            align-items: center; /* Center vertically */
-            justify-content: center; /* Center horizontally */
+            margin-bottom: var(--spacing-md);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            background-color: var(--background-color);
+            color: var(--text-color);
         }
 
-        .bottom-nav .nav-item.medkit .material-symbols-outlined {
-            font-size: 2rem;
+        .bottom-sheet button {
+            width: 100%;
+            padding: var(--spacing-sm);
+            background-color: var(--primary-color);
             color: white;
+            border: none;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: background-color 0.2s ease;
         }
 
-        .bottom-nav .nav-item.medkit span {
-            color: white;
+        .bottom-sheet button:hover {
+            background-color: #357abd;
         }
 
-        /* Media Queries for Responsiveness */
-        @media (max-width: 768px) {
-            .actions {
-                flex-wrap: wrap; /* Allow wrapping for smaller screens */
-            }
+        /* Overlay for Bottom Sheet */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            display: none;
+        }
 
-            .action-button {
-                margin-bottom: var(--spacing-md); /* Add some space between buttons */
-            }
+        .overlay.active {
+            display: block;
         }
     </style>
 </head>
@@ -303,16 +338,9 @@
         </button>
     </header>
 
-    <!-- Video Section -->
-    <section class="video-section">
-        <div class="video-container" id="video-container">
-            <!-- Video will be dynamically inserted here -->
-        </div>
-    </section>
-
     <!-- Main Content -->
     <main class="main-content">
-        <!-- Action Buttons -->
+        <!-- Centered Action Buttons -->
         <div class="actions">
             <button class="action-button" id="mic-button">
                 <span class="material-symbols-outlined">mic</span>
@@ -322,95 +350,81 @@
                 <span class="material-symbols-outlined">videocam</span>
                 <span>Video</span>
             </button>
-            <button class="action-button" id="chat-button" onclick="window.location.href='js/conversations.html'">
+            <button class="action-button" id="chat-button">
                 <span class="material-symbols-outlined">chat</span>
                 <span>Chat</span>
             </button>
+            <button class="action-button" id="settings-button">
+                <span class="material-symbols-outlined">settings</span>
+                <span>Settings</span>
+            </button>
         </div>
 
-        <!-- Chat Interface -->
-        <article class="chat-interface">
-            <div class="logs-header" id="logs-header">
-                <span>Chat History</span>
-                <span class="material-symbols-outlined">expand_more</span>
+        <!-- Audio Visualizers -->
+        <div class="audio-visualizers">
+            <div class="visualizer-container">
+                <label>Input Audio</label>
+                <div class="visualizer" id="input-audio-visualizer">
+                    <div class="visualizer-bar"></div>
+                </div>
             </div>
-            <div id="logs-container">
-                <!-- Log entries will be dynamically inserted here -->
+            <div class="visualizer-container">
+                <label>Output Audio</label>
+                <div class="visualizer" id="output-audio-visualizer">
+                    <div class="visualizer-bar"></div>
+                </div>
             </div>
-        </article>
+        </div>
+
+        <!-- Video Section -->
+        <section class="video-section">
+            <div class="video-scroll-container" id="video-scroll-container">
+                <!-- Videos will be dynamically inserted here -->
+            </div>
+        </section>
     </main>
+
+    <!-- Bottom Sheet for Settings -->
+    <div class="bottom-sheet" id="bottom-sheet">
+        <h3>Settings</h3>
+        <select id="voice-select">
+            <option value="Puck">Puck (Male)</option>
+            <option value="Charon">Charon (Male)</option>
+            <option value="Kore">Kore (Female)</option>
+            <option value="Fenrir">Fenrir (Male)</option>
+            <option value="Aoede">Aoede (Female)</option>
+        </select>
+        <input type="number" id="sample-rate-input" placeholder="Sample Rate (Hz)" min="8000" max="48000" step="1000">
+        <select id="system-prompt-select">
+            <option value="daisy">Daisy (Default)</option>
+            <option value="friendly">Friendly Assistant</option>
+            <option value="professional">Professional Expert</option>
+            <option value="tired">Tired Assistant</option>
+        </select>
+        <button id="apply-settings">Apply</button>
+    </div>
+
+    <!-- Overlay for Bottom Sheet -->
+    <div class="overlay" id="overlay"></div>
 
     <!-- Bottom Navigation -->
     <nav class="bottom-nav">
-        <button class="nav-item" onclick="window.location.href='tools.html'">
+        <a class="nav-item" href="tools.html">
             <span class="material-symbols-outlined">build</span>
             <span>Tools</span>
-        </button>
-        <button class="nav-item medkit active">
+        </a>
+        <a class="nav-item active" href="index.html">
             <span class="material-symbols-outlined">medical_services</span>
             <span>Home</span>
-        </button>
-        <button class="nav-item" onclick="window.location.href='profile.html'">
+        </a>
+        <a class="nav-item" href="profile.html">
             <span class="material-symbols-outlined">person</span>
             <span>Profile</span>
-        </button>
+        </a>
     </nav>
 
-    <script>
-        // Toggle Connection Status
-        const connectionStatus = document.querySelector('.connection-status');
-        const connectButton = document.querySelector('.connect-button');
-
-        connectButton.addEventListener('click', () => {
-            if (connectionStatus.classList.contains('disconnected')) {
-                connectionStatus.classList.remove('disconnected');
-                connectionStatus.classList.add('connected');
-                connectionStatus.innerHTML = `
-                    <span class="material-symbols-outlined">wifi</span>
-                    <span>Connected</span>
-                `;
-                connectButton.innerHTML = `
-                    <span class="material-symbols-outlined">link_off</span>
-                `;
-            } else {
-                connectionStatus.classList.remove('connected');
-                connectionStatus.classList.add('disconnected');
-                connectionStatus.innerHTML = `
-                    <span class="material-symbols-outlined">wifi_off</span>
-                    <span>Disconnected</span>
-                `;
-                connectButton.innerHTML = `
-                    <span class="material-symbols-outlined">link</span>
-                `;
-            }
-        });
-
-        // Load YouTube Video from video.json
-        fetch('video.json')
-            .then(response => response.json())
-            .then(data => {
-                const videoContainer = document.getElementById('video-container');
-                const firstVideo = data[0]; // Get the first video
-
-                // Create an iframe for the first video
-                const iframe = document.createElement('iframe');
-                iframe.src = firstVideo.url;
-                iframe.title = firstVideo.title;
-                iframe.frameborder = "0";
-                iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
-                iframe.allowFullscreen = true; // Enable full-screen
-                videoContainer.appendChild(iframe);
-            })
-            .catch(error => console.error('Error loading video:', error));
-
-        // Toggle Chat History
-        const logsHeader = document.getElementById('logs-header');
-        const chatInterface = document.querySelector('.chat-interface');
-
-        logsHeader.addEventListener('click', () => {
-            chatInterface.classList.toggle('expanded');
-            logsHeader.classList.toggle('collapsed');
-        });
-    </script>
+    <!-- Scripts -->
+    <script src="js/config/config.js"></script>
+    <script src="js/main.js"></script>
 </body>
 </html>
