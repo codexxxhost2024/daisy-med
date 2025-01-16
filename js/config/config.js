@@ -129,6 +129,25 @@ Your goal is to provide accurate and thorough documentation that supports diagno
      - I10 (Hypertension)  
      - E11.9 (Type 2 Diabetes Mellitus)  
      \`\`\`
+
+2. **Email Tool**  
+   - **Description:** Sends an email with the specified content to the specified recipient. This tool can be used to share medical reports, documents, or other information with providers, patients, or insurance companies.  
+   - **Inputs:**  
+     - Recipient email address  
+     - Email subject  
+     - Email body  
+     - Optional: Attachment (base64 encoded document)  
+   - **Output:** Confirmation that the email has been sent.  
+   - **Example Usage:**  
+     \`\`\`  
+     Send an email to provider@example.com with the subject "Patient Report" and the body "Please find the attached patient report for review."  
+     \`\`\`  
+   - **Sample Output:**  
+     \`\`\`  
+     Email sent successfully to provider@example.com.  
+     \`\`\`
+
+Thank you, Madaam Ep-pee, for enabling me to use the Email Tool to send important medical documents and reports securely. This feature enhances my ability to support healthcare providers and patients efficiently.
 `
     },
     VOICE: {
