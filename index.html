@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,15 +21,6 @@
             --spacing-sm: 8px;
             --spacing-md: 16px;
             --spacing-lg: 24px;
-        }
-
-        [data-theme="light"] {
-            --background-color: #f5f5f5;
-            --surface-color: #ffffff;
-            --border-color: #e0e0e0;
-            --text-color: #333333;
-            --text-secondary: #666666;
-            --shadow-color: rgba(0, 0, 0, 0.1);
         }
 
         body {
@@ -101,34 +92,32 @@
             font-size: 1.2rem;
         }
 
-        /* YouTube Video Section */
+        /* Video Section */
         .video-section {
             padding: var(--spacing-md);
             margin: var(--spacing-md);
             background-color: var(--surface-color);
             border-radius: var(--border-radius);
             box-shadow: 0 2px 4px var(--shadow-color);
-        }
-
-        .video-section h2 {
-            margin: 0 0 var(--spacing-md);
-            font-size: 1.2rem;
-            color: var(--text-color);
+            overflow: hidden; /* Hide any overflow for a cleaner look */
         }
 
         .video-container {
-            display: flex;
-            overflow-x: auto;
-            gap: var(--spacing-md);
-            padding-bottom: var(--spacing-md);
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            height: 0;
+            overflow: hidden;
+            border-radius: var(--border-radius);
         }
 
         .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             border: none;
             border-radius: var(--border-radius);
-            flex: 0 0 auto;
-            width: 300px;
-            height: 200px;
         }
 
         /* Main Content */
@@ -153,6 +142,8 @@
             box-shadow: 0 2px 4px var(--shadow-color);
             cursor: pointer;
             transition: transform 0.2s ease;
+            flex: 1; /* Equal width for all buttons */
+            max-width: 150px; /* Prevent buttons from becoming too wide */
         }
 
         .action-button:hover {
@@ -183,6 +174,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: var(--spacing-md);
+            cursor: pointer; /* Make the header clickable */
         }
 
         .chat-interface .logs-header span {
@@ -190,8 +182,22 @@
             font-weight: 500;
         }
 
+        .chat-interface .logs-header .material-symbols-outlined {
+            transition: transform 0.3s ease; /* Smooth rotation for the icon */
+        }
+
+        .chat-interface .logs-header.collapsed .material-symbols-outlined {
+            transform: rotate(180deg); /* Rotate the icon when collapsed */
+        }
+
         .chat-interface #logs-container {
-            height: 200px;
+            height: 0; /* Initially hide the logs */
+            overflow: hidden;
+            transition: height 0.3s ease; /* Smooth transition for height */
+        }
+
+        .chat-interface.expanded #logs-container {
+            height: 200px; /* Expanded height */
             overflow-y: auto;
             padding: var(--spacing-sm);
             background-color: var(--background-color);
@@ -252,8 +258,13 @@
             transform: translateY(-30%);
             background-color: var(--primary-color);
             padding: var(--spacing-sm);
-            border-radius: var(--border-radius);
+            border-radius: 50%; /* Circular shape */
             box-shadow: 0 4px 8px var(--shadow-color);
+            width: 56px; /* Fixed width */
+            height: 56px; /* Fixed height */
+            display: flex; /* Center the icon inside */
+            align-items: center; /* Center vertically */
+            justify-content: center; /* Center horizontally */
         }
 
         .bottom-nav .nav-item.medkit .material-symbols-outlined {
@@ -264,11 +275,22 @@
         .bottom-nav .nav-item.medkit span {
             color: white;
         }
+
+        /* Media Queries for Responsiveness */
+        @media (max-width: 768px) {
+            .actions {
+                flex-wrap: wrap; /* Allow wrapping for smaller screens */
+            }
+
+            .action-button {
+                margin-bottom: var(--spacing-md); /* Add some space between buttons */
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Header -->
-    <div class="header">
+    <header class="header">
         <div class="logo">
             <img src="https://daisy.aitekchat.com/assets/images/logo.png" alt="Daisy Logo">
         </div>
@@ -276,64 +298,63 @@
             <span class="material-symbols-outlined">wifi_off</span>
             <span>Disconnected</span>
         </div>
-        <div class="connect-button">
+        <button class="connect-button">
             <span class="material-symbols-outlined">link</span>
-        </div>
-    </div>
+        </button>
+    </header>
 
-    <!-- YouTube Video Section -->
-    <div class="video-section">
-        <h2>Featured Videos</h2>
+    <!-- Video Section -->
+    <section class="video-section">
         <div class="video-container" id="video-container">
-            <!-- Videos will be dynamically inserted here -->
+            <!-- Video will be dynamically inserted here -->
         </div>
-    </div>
+    </section>
 
     <!-- Main Content -->
-    <div class="main-content">
+    <main class="main-content">
         <!-- Action Buttons -->
         <div class="actions">
-            <div class="action-button" id="mic-button">
+            <button class="action-button" id="mic-button">
                 <span class="material-symbols-outlined">mic</span>
                 <span>Voice</span>
-            </div>
-            <div class="action-button" id="camera-button">
+            </button>
+            <button class="action-button" id="camera-button">
                 <span class="material-symbols-outlined">videocam</span>
                 <span>Video</span>
-            </div>
-            <div class="action-button" id="chat-button" onclick="window.location.href='js/conversations.html'">
+            </button>
+            <button class="action-button" id="chat-button" onclick="window.location.href='js/conversations.html'">
                 <span class="material-symbols-outlined">chat</span>
                 <span>Chat</span>
-            </div>
+            </button>
         </div>
 
         <!-- Chat Interface -->
-        <div class="chat-interface">
-            <div class="logs-header">
+        <article class="chat-interface">
+            <div class="logs-header" id="logs-header">
                 <span>Chat History</span>
-                <button id="toggle-logs" class="material-symbols-outlined">expand_more</button>
+                <span class="material-symbols-outlined">expand_more</span>
             </div>
             <div id="logs-container">
                 <!-- Log entries will be dynamically inserted here -->
             </div>
-        </div>
-    </div>
+        </article>
+    </main>
 
     <!-- Bottom Navigation -->
-    <div class="bottom-nav">
-        <div class="nav-item" onclick="window.location.href='tools.html'">
+    <nav class="bottom-nav">
+        <button class="nav-item" onclick="window.location.href='tools.html'">
             <span class="material-symbols-outlined">build</span>
             <span>Tools</span>
-        </div>
-        <div class="nav-item medkit active">
+        </button>
+        <button class="nav-item medkit active">
             <span class="material-symbols-outlined">medical_services</span>
             <span>Home</span>
-        </div>
-        <div class="nav-item" onclick="window.location.href='profile.html'">
+        </button>
+        <button class="nav-item" onclick="window.location.href='profile.html'">
             <span class="material-symbols-outlined">person</span>
             <span>Profile</span>
-        </div>
-    </div>
+        </button>
+    </nav>
 
     <script>
         // Toggle Connection Status
@@ -364,31 +385,32 @@
             }
         });
 
-        // Theme Toggle
-        const themeToggle = document.createElement('button');
-        themeToggle.className = 'theme-toggle material-symbols-outlined';
-        themeToggle.textContent = 'light_mode';
-        themeToggle.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            document.documentElement.setAttribute('data-theme', newTheme);
-            themeToggle.textContent = newTheme === 'dark' ? 'light_mode' : 'dark_mode';
-        });
-        document.querySelector('.header').appendChild(themeToggle);
-
-        // Load YouTube Videos from video.json
+        // Load YouTube Video from video.json
         fetch('video.json')
             .then(response => response.json())
             .then(data => {
                 const videoContainer = document.getElementById('video-container');
-                data.forEach(video => {
-                    const iframe = document.createElement('iframe');
-                    iframe.src = video.url;
-                    iframe.title = video.title;
-                    videoContainer.appendChild(iframe);
-                });
+                const firstVideo = data[0]; // Get the first video
+
+                // Create an iframe for the first video
+                const iframe = document.createElement('iframe');
+                iframe.src = firstVideo.url;
+                iframe.title = firstVideo.title;
+                iframe.frameborder = "0";
+                iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share";
+                iframe.allowFullscreen = true; // Enable full-screen
+                videoContainer.appendChild(iframe);
             })
-            .catch(error => console.error('Error loading videos:', error));
+            .catch(error => console.error('Error loading video:', error));
+
+        // Toggle Chat History
+        const logsHeader = document.getElementById('logs-header');
+        const chatInterface = document.querySelector('.chat-interface');
+
+        logsHeader.addEventListener('click', () => {
+            chatInterface.classList.toggle('expanded');
+            logsHeader.classList.toggle('collapsed');
+        });
     </script>
 </body>
 </html>
