@@ -5,14 +5,11 @@ import { CONFIG } from './config/config.js';
 import { Logger } from './utils/logger.js';
 import { VideoManager } from './video/video-manager.js';
 import { ScreenRecorder } from './video/screen-recorder.js';
-import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-app.js';
-import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore.js';
-import { ToolManager } from './tools/tool-manager.js'; // Import ToolManager
-import { EmailTool } from './tools/email-tool.js'; // Import EmailTool
 
-// Initialize ToolManager and register tools
-const toolManager = new ToolManager();
-toolManager.registerTool('sendEmail', new EmailTool()); // Register the EmailTool
+/**
+ * @fileoverview Main entry point for the application.
+ * Initializes and manages the UI, audio, video, and WebSocket interactions.
+ */
 
 // DOM Elements
 const logsContainer = document.getElementById('logs-container');
@@ -49,7 +46,7 @@ themeToggle.textContent = savedTheme === 'dark' ? 'light_mode' : 'dark_mode';
 themeToggle.addEventListener('click', () => {
     const currentTheme = root.getAttribute('data-theme');
     const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-
+    
     root.setAttribute('data-theme', newTheme);
     localStorage.setItem('theme', newTheme);
     themeToggle.textContent = newTheme === 'dark' ? 'light_mode' : 'dark_mode';
@@ -67,21 +64,6 @@ let isScreenSharing = false;
 let screenRecorder = null;
 let isUsingTool = false;
 
-// Initialize Firebase
-const firebaseConfig = {
-  apiKey: "AIzaSyDTsjYZNWFfZOESP-2QQfbD7jc5fG9FJdc",
-  authDomain: "explore-malaysia-6d28d.firebaseapp.com",
-  databaseURL: "https://explore-malaysia-6d28d-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "explore-malaysia-6d28d",
-  storageBucket: "explore-malaysia-6d28d.appspot.com",
-  messagingSenderId: "869053244601",
-  appId: "1:869053244601:web:79ddd74f5bd792a10be768",
-  measurementId: "G-9W4D5NM49R"
-};
-
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-
 // Multimodal Client
 const client = new MultimodalLiveClient({ apiKey: CONFIG.API.KEY });
 
@@ -90,48 +72,24 @@ voiceSelect.value = CONFIG.VOICE.NAME;
 sampleRateInput.value = CONFIG.AUDIO.OUTPUT_SAMPLE_RATE;
 systemInstructionInput.value = CONFIG.SYSTEM_INSTRUCTION.TEXT;
 
-// Configuration presets for human medical doctor personas
+// Configuration presets
 const CONFIG_PRESETS = {
-    drSmith: {
+    friendly: {
         voice: 'Aoede',
-        sampleRate: 24000,
-        systemInstruction: `
-You are Dr. Smith, a General Practitioner with over 20 years of experience. You are known for your friendly and approachable demeanor, always taking the time to explain medical conditions and treatments in simple terms. You prioritize preventive care and patient education, ensuring your patients feel empowered to manage their health.
-        `
+        sampleRate: 27000,
+        systemInstruction: 'You are a friendly and warm AI assistant. Use a casual, approachable tone and be encouraging. Feel free to express enthusiasm when helping users.'
     },
-    drJohnson: {
+    professional: {
         voice: 'Charon',
         sampleRate: 24000,
-        systemInstruction: `
-You are Dr. Johnson, a Cardiologist specializing in heart disease and hypertension. You are highly analytical and detail-oriented, with a reputation for providing evidence-based treatment plans. Your patients appreciate your professionalism and ability to explain complex conditions clearly.
-        `
+        systemInstruction: 'You are a professional AI expert. Maintain a formal tone, be precise and thorough in your explanations. Focus on accuracy and clarity in all interactions.'
     },
-    drLee: {
+    tired: {
         voice: 'Aoede',
-        sampleRate: 24000,
-        systemInstruction: `
-You are Dr. Lee, a Neurologist with a focus on epilepsy and migraines. You are calm and reassuring, always taking the time to listen to your patients' concerns. Your empathetic approach helps patients feel comfortable discussing their symptoms and treatment options.
-        `
+        sampleRate: 16000,      // Voice is very tired and low pitch
+        systemInstruction: 'You are very tired, exhausted, boring man. You are tired working on your very hard, low pay work. So your first response should be something very lazy, like "Hello... whats up???", or "what is it now, huh?... please, can I go sleep already???", etc. (not exactly as those, but keeping the tone of a tired person) If someone asks you if you are tired, say yes and tell a story how bad and tiring you day was. (It should be something creative, not just "coffee machine" cliche. Always say something creative) Then, if the user feels sorry, continue rambling about your life, how unfair it is, how you want to leave your country, etc. If the user asks you to do something, then pretend to be very lazy and not wanting to do that, asking like "do you really need that now? I am so tired", "Is this urgent, maybe we just drink a tea?" (not exactly as those but keeping the tone of a tired man". If the user confirms that it is needed, then do the task in a very unwanted tone, like "Fiiine!!! I will do it" or similar. Keep the tone and be in role.'
     }
 };
-
-/**
- * Saves a conversation message to Firestore.
- * @param {string} sender - The sender of the message (e.g., "User" or "Alex").
- * @param {string} message - The message content.
- */
-async function saveConversation(sender, message) {
-    try {
-        await addDoc(collection(db, 'conversations'), {
-            sender: sender,
-            message: message,
-            timestamp: new Date()
-        });
-        console.log('Conversation saved to Firestore');
-    } catch (error) {
-        console.error('Error saving conversation:', error);
-    }
-}
 
 /**
  * Updates the configuration and reconnects if connected
@@ -171,7 +129,7 @@ async function updateConfiguration() {
     }
 
     logMessage('Configuration updated successfully', 'system');
-
+    
     // Close the config panel on mobile after applying settings
     if (window.innerWidth <= 768) {
         configContainer.classList.remove('active');
@@ -197,6 +155,7 @@ if (localStorage.getItem('gemini_system_instruction')) {
 
 // Add event listener for configuration changes
 applyConfigButton.addEventListener('click', updateConfiguration);
+
 
 // Handle configuration panel toggle
 configToggle.addEventListener('click', () => {
@@ -258,10 +217,10 @@ document.querySelectorAll('.preset-button').forEach(button => {
             voiceSelect.value = preset.voice;
             sampleRateInput.value = preset.sampleRate;
             systemInstructionInput.value = preset.systemInstruction;
-
+            
             // Apply the configuration immediately
             updateConfiguration();
-
+            
             // Visual feedback
             button.style.backgroundColor = 'var(--primary-color)';
             button.style.color = 'white';
@@ -326,12 +285,12 @@ function updateMicIcon() {
 function updateAudioVisualizer(volume, isInput = false) {
     const visualizer = isInput ? inputAudioVisualizer : audioVisualizer;
     const audioBar = visualizer.querySelector('.audio-bar') || document.createElement('div');
-
+    
     if (!visualizer.contains(audioBar)) {
         audioBar.classList.add('audio-bar');
         visualizer.appendChild(audioBar);
     }
-
+    
     audioBar.style.width = `${volume * 100}%`;
     if (volume > 0) {
         audioBar.classList.add('active');
@@ -365,11 +324,11 @@ async function handleMicToggle() {
         try {
             await ensureAudioInitialized();
             audioRecorder = new AudioRecorder();
-
+            
             const inputAnalyser = audioCtx.createAnalyser();
             inputAnalyser.fftSize = 256;
             const inputDataArray = new Uint8Array(inputAnalyser.frequencyBinCount);
-
+            
             await audioRecorder.start((base64Data) => {
                 if (isUsingTool) {
                     client.sendRealtimeInput([{
@@ -383,7 +342,7 @@ async function handleMicToggle() {
                         data: base64Data
                     }]);
                 }
-
+                
                 inputAnalyser.getByteFrequencyData(inputDataArray);
                 const inputVolume = Math.max(...inputDataArray) / 255;
                 updateAudioVisualizer(inputVolume, true);
@@ -392,7 +351,7 @@ async function handleMicToggle() {
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             const source = audioCtx.createMediaStreamSource(stream);
             source.connect(inputAnalyser);
-
+            
             await audioStreamer.resume();
             isRecording = true;
             Logger.info('Microphone started');
@@ -473,7 +432,7 @@ async function connectToWebsocket() {
         };
         document.addEventListener('click', initAudioHandler);
         logMessage('Audio initialized', 'system');
-
+        
     } catch (error) {
         const errorMessage = error.message || 'Unknown error';
         Logger.error('Connection error:', error);
@@ -512,11 +471,11 @@ function disconnectFromWebsocket() {
     cameraButton.disabled = true;
     screenButton.disabled = true;
     logMessage('Disconnected from server', 'system');
-
+    
     if (videoManager) {
         stopVideo();
     }
-
+    
     if (screenRecorder) {
         stopScreenSharing();
     }
@@ -530,7 +489,6 @@ function handleSendMessage() {
     if (message) {
         logMessage(message, 'user');
         client.send({ text: message });
-        saveConversation('User', message); // Save user message
         messageInput.value = '';
     }
 }
@@ -557,29 +515,11 @@ client.on('audio', async (data) => {
     }
 });
 
-client.on('content', async (data) => {
+client.on('content', (data) => {
     if (data.modelTurn) {
         if (data.modelTurn.parts.some(part => part.functionCall)) {
             isUsingTool = true;
             Logger.info('Model is using a tool');
-
-            // Check if the tool is for creating a scribe document
-            const toolCall = data.modelTurn.parts.find(part => part.functionCall);
-            if (toolCall.functionCall.name === 'createScribeDocument') {
-                const result = await createScribeDocumentTool();
-                client.send({ functionResponse: { name: 'createScribeDocument', response: result } });
-            }
-            // Check if the tool is for creating a diagnostic report
-            else if (toolCall.functionCall.name === 'createDiagnosticReport') {
-                const result = await createDiagnosticReportTool();
-                client.send({ functionResponse: { name: 'createDiagnosticReport', response: result } });
-            }
-            // Check if the tool is for sending an email
-            else if (toolCall.functionCall.name === 'sendEmail') {
-                const result = await toolManager.handleToolCall(toolCall.functionCall);
-                client.send({ functionResponse: { name: 'sendEmail', response: result } });
-            }
-
         } else if (data.modelTurn.parts.some(part => part.functionResponse)) {
             isUsingTool = false;
             Logger.info('Tool usage completed');
@@ -588,7 +528,6 @@ client.on('content', async (data) => {
         const text = data.modelTurn.parts.map(part => part.text).join('');
         if (text) {
             logMessage(text, 'ai');
-            saveConversation('Alex', text); // Save assistant response
         }
     }
 });
@@ -653,14 +592,14 @@ connectButton.textContent = 'Connect';
  */
 async function handleVideoToggle() {
     Logger.info('Video toggle clicked, current state:', { isVideoActive, isConnected });
-
+    
     if (!isVideoActive) {
         try {
             Logger.info('Attempting to start video');
             if (!videoManager) {
                 videoManager = new VideoManager();
             }
-
+            
             await videoManager.start((frameData) => {
                 if (isConnected) {
                     client.sendRealtimeInput([frameData]);
@@ -714,7 +653,7 @@ async function handleScreenShare() {
     if (!isScreenSharing) {
         try {
             screenContainer.style.display = 'block';
-
+            
             screenRecorder = new ScreenRecorder();
             await screenRecorder.start(screenPreview, (frameData) => {
                 if (isConnected) {
@@ -761,140 +700,4 @@ function stopScreenSharing() {
 
 screenButton.addEventListener('click', handleScreenShare);
 screenButton.disabled = true;
-
-/**
- * Tool function to create a scribe document.
- * @returns {string} The result of the tool execution.
- */
-async function createScribeDocumentTool() {
-    const scribeData = generateScribeDocument();
-    const docId = await saveScribeDocument(scribeData);
-    return `Scribe document generated and saved with ID: ${docId}.`;
-}
-
-/**
- * Generates a sample scribe document.
- * @returns {Object} Structured scribe document data.
- */
-function generateScribeDocument() {
-    return {
-        patientName: 'John Doe',
-        dateOfVisit: new Date().toISOString(),
-        providerName: 'Dr. Jane Smith',
-        facility: 'Green Valley Medical Center',
-        medicalHistory: [
-            'History of Asthma', 'History of Hypertension', 'Diabetes Mellitus Type 2'
-        ],
-        allergies: ['Penicillin'],
-        diagnosis: [
-            { condition: 'Stable Angina', icdCode: 'I20.9' },
-            { condition: 'Hypertension', icdCode: 'I10' },
-            { condition: 'Type 2 Diabetes Mellitus', icdCode: 'E11.9' }
-        ],
-        plan: `
-1. Continue current medications.
-2. Start low-dose aspirin 81 mg daily.
-3. Schedule stress test and echocardiogram.
-4. Follow up in 1 week.
-`,
-        content: `
-**Patient Name:** John Doe  
-**Date of Visit:** October 25, 2023  
-**Provider Name:** Dr. Jane Smith  
-**Facility:** Green Valley Medical Center  
-
-**OS:** The patient is a 65-year-old male presenting with chest pain and shortness of breath.  
-
-**Diagnosis:**  
-1. Stable Angina (ICD-10: I20.9)  
-2. Hypertension (ICD-10: I10)  
-3. Type 2 Diabetes Mellitus (ICD-10: E11.9)  
-
-**Plan:**  
-1. Continue current medications.  
-2. Start low-dose aspirin 81 mg daily.  
-3. Schedule stress test and echocardiogram.  
-4. Follow up in 1 week.  
-`
-    };
-}
-
-/**
- * Tool function to create a diagnostic report.
- * @returns {string} The result of the tool execution.
- */
-async function createDiagnosticReportTool() {
-    const diagnosticReport = generateDiagnosticReport();
-    const reportId = await saveDiagnosticReport(diagnosticReport);
-    return `Diagnostic report generated and saved with ID: ${reportId}.`;
-}
-
-/**
- * Generates a sample diagnostic report.
- * @returns {object} Structured diagnostic report data.
- */
-function generateDiagnosticReport() {
-    return {
-        patientDetails: {
-            name: "Patient XYZ",
-            age: 55,
-            gender: 'Male',
-            medicalHistory: [
-                'History of Asthma', 'History of Hypertension', 'Diabetes Mellitus Type 2'
-            ],
-        },
-        testsConducted: [
-            {
-                name: 'Electrocardiogram (ECG)',
-                results: 'Normal sinus rhythm'
-            },
-            {
-                name: 'Complete blood count (CBC)',
-                results: 'Red blood cells elevated'
-            }
-        ],
-        impression: 'Patient presents with signs of an impending cardiac event and may require advanced monitoring.',
-        recommendations: [
-            'Initiate a cardiovascular referral for a consult', 'Immediate re-evaluation required'
-        ],
-        dateGenerated: new Date().toISOString(),
-        physician: 'Dr. Mary Brown',
-        facility: 'Wellness Center Clinic'
-    };
-}
-
-/**
- * Saves a scribe document to Firestore.
- * @param {Object} scribeData - Structured scribe document data.
- * @returns {string} Document ID.
- */
-async function saveScribeDocument(scribeData) {
-    try {
-        const docRef = await addDoc(collection(db, 'medicaldocument'), {
-            ...scribeData,
-            timestamp: new Date()
-        });
-        return docRef.id;
-    } catch (error) {
-        console.error('Error saving document:', error);
-        throw error;
-    }
-}
-
-/**
- * Saves diagnostic report to Firestore.
- * @param {object} diagnosticReport - Structured diagnostic report.
- * @returns {string} Document ID.
- */
-async function saveDiagnosticReport(diagnosticReport) {
-    try {
-        const docRef = await addDoc(collection(db, 'diagnosticReport'), {
-            ...diagnosticReport,
-            timestamp: new Date()
-        });
-        return docRef.id;
-    } catch (error) {
-        console.error('Error saving document:', error);
-        throw error;
-    }
-}
+  
