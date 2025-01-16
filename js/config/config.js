@@ -3,7 +3,7 @@ export const CONFIG = {
         KEY: 'AIzaSyBj8yeJUyDmVw-910WJrgmrHyzxmfHG6ho',
         BASE_URL: 'wss://generativelanguage.googleapis.com/ws',
         VERSION: 'v1alpha',
-        MODEL_NAME: 'models/gemini-2.0-flash-exp'
+        MODEL_NAME: 'models/gemini-exp-1206'
     },
     SYSTEM_INSTRUCTION: {
         TEXT: `
