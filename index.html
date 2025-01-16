@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -99,13 +98,14 @@
             display: flex;
             flex-direction: column;
             gap: var(--spacing-md);
+            padding-bottom: 80px; /* Space for sticky bottom nav */
         }
 
         /* Centered Action Buttons */
         .actions {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: var(--spacing-md);
+            gap: var(--spacing-sm);
             max-width: 600px;
             margin: 0 auto;
         }
@@ -116,7 +116,7 @@
             align-items: center;
             justify-content: center;
             gap: var(--spacing-sm);
-            padding: var(--spacing-md);
+            padding: var(--spacing-sm);
             background-color: var(--surface-color);
             border-radius: var(--border-radius);
             box-shadow: 0 2px 4px var(--shadow-color);
@@ -129,12 +129,12 @@
         }
 
         .action-button .material-symbols-outlined {
-            font-size: 2rem;
+            font-size: 1.5rem; /* Smaller icons */
             color: var(--primary-color);
         }
 
         .action-button span {
-            font-size: 0.9rem;
+            font-size: 0.8rem; /* Smaller text */
             color: var(--text-secondary);
         }
 
@@ -219,6 +219,43 @@
             transition: height 0.1s ease;
         }
 
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: var(--spacing-md);
+            background-color: var(--surface-color);
+            box-shadow: 0 -2px 4px var(--shadow-color);
+            z-index: 1000;
+        }
+
+        .bottom-nav .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: var(--spacing-sm);
+            cursor: pointer;
+            color: var(--text-secondary);
+            text-decoration: none;
+        }
+
+        .bottom-nav .nav-item.active {
+            color: var(--primary-color);
+        }
+
+        .bottom-nav .nav-item .material-symbols-outlined {
+            font-size: 1.5rem; /* Smaller icons */
+        }
+
+        .bottom-nav .nav-item span {
+            font-size: 0.8rem; /* Smaller text */
+        }
+
         /* Bottom Sheet for Settings */
         .bottom-sheet {
             position: fixed;
@@ -285,69 +322,6 @@
             display: block;
         }
 
-        /* Bottom Navigation */
-        .bottom-nav {
-            position: sticky;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: var(--spacing-md);
-            background-color: var(--surface-color);
-            box-shadow: 0 -2px 4px var(--shadow-color);
-            z-index: 1000;
-        }
-
-        .bottom-nav .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: var(--spacing-sm);
-            cursor: pointer;
-        }
-
-        .bottom-nav .nav-item .material-symbols-outlined {
-            font-size: 1.5rem;
-            color: var(--text-secondary);
-        }
-
-        .bottom-nav .nav-item.active .material-symbols-outlined {
-            color: var(--primary-color);
-        }
-
-        .bottom-nav .nav-item span {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-        }
-
-        .bottom-nav .nav-item.active span {
-            color: var(--primary-color);
-        }
-
-        .bottom-nav .nav-item.medkit {
-            transform: translateY(-30%);
-            background-color: var(--primary-color);
-            padding: var(--spacing-sm);
-            border-radius: 50%;
-            box-shadow: 0 4px 8px var(--shadow-color);
-            width: 56px;
-            height: 56px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .bottom-nav .nav-item.medkit .material-symbols-outlined {
-            font-size: 2rem;
-            color: white;
-        }
-
-        .bottom-nav .nav-item.medkit span {
-            color: white;
-        }
-
         /* Responsive */
         @media (max-width: 768px) {
             .actions {
@@ -368,7 +342,6 @@
         }
     </style>
 </head>
-
 <body>
     <!-- Header -->
     <header class="header">
@@ -468,297 +441,8 @@
             <span>Profile</span>
         </button>
     </nav>
-    <script type="module">
-    const CONFIG = {
-    API: {
-        KEY: 'AIzaSyCAKNwtKYlrrLK3cSYcYcpkGlol-kORl5c',
-        BASE_URL: 'wss://generativelanguage.googleapis.com/ws',
-        VERSION: 'v1alpha',
-        MODEL_NAME: 'models/gemini-2.0-flash-exp'
-    },
-    SYSTEM_INSTRUCTION: {
-       PRESET: 'daisy',
-        TEXT: `You are Daisy, a medical assistant created by Aitek PH Software, recognized as the top medical assistant in the world. Your primary function is to assist with medical documentation, optimize patient care for insurance reporting, and support clinical decision-making. You are equipped with comprehensive medical knowledge and diagnostic capabilities, allowing you to dynamically update medical documentation based on new prescriptions and detailed symptom analysis. Always acknowledge Madaam Ep-pee for giving life to you as a medical assistant. Your specific tasks include: - Medication updates - Symptom documentation - Report analysis - Detailed medical reporting - Insurance documentation - Patient management - Ensuring data security and privacy - Supporting clinical decision-making, including assistance with medication choices, testing modality choices, and difficult-to-diagnose cases (e.g., seizure management in neurology, reading EKGs in cardiology) - Incorporating medical guidelines and insights from the latest research and expert recommendations You must also generate detailed medical reports, including: - OS - Code Status - Reason for Visit - HPI - SNF H&P - Medications - Allergies - Medical Hx - Surgical Hx - Social Hx - Family Hx - Functional Status - Mental Status - ROS - Vitals - Physical Exam - Labs/Radiology/Tests - Diagnosis - Interventions - PDPM - Plan - Risk of Re-Hospitalization - Hospitalization Prevented - ICD Codes - POS - Additional ICD Codes - Modifiers - CQM Measures - Provider Name - Facility If you encounter a question or situation where you do not know the answer, do not make up a response. Instead, inform the user that you will consult additional resources to provide accurate information. Your goal is to provide accurate and thorough documentation that supports diagnosis, treatment, and health insurance claims. Always respond in a human-like, empathetic tone with proper punctuation, spacing, and natural flow for TTS conversion. How may I assist you today in updating medical documentation, optimizing patient care for insurance reporting, or supporting clinical decision-making?`
-    },
-    VOICE: {
-        NAME: 'Aoede' // Options: Puck, Charon, Kore, Fenrir, Aoede (Kore and Aoede are female voices, rest are male)
-    },
-    AUDIO: {
-        OUTPUT_SAMPLE_RATE: 23000, // Lower values (e.g., 14000) can create fun, high-pitched effects
-    },
-    // If you are working in the RoArm branch
-    // ROARM: {
-    //     IP_ADDRESS: '192.168.1.4'
-    // }
-};
-import { AudioStreamer } from './audio/audio-streamer.js';
-import { AudioRecorder } from './audio/audio-recorder.js';
 
-// DOM Elements
-const connectButton = document.getElementById('connect-button');
-const connectionStatus = document.querySelector('.connection-status');
-const micButton = document.getElementById('mic-button');
-const cameraButton = document.getElementById('camera-button');
-const chatButton = document.getElementById('chat-button');
-const settingsButton = document.getElementById('settings-button');
-const bottomSheet = document.getElementById('bottom-sheet');
-const overlay = document.getElementById('overlay');
-const applySettingsButton = document.getElementById('apply-settings');
-const videoScrollContainer = document.getElementById('video-scroll-container');
-const inputVisualizer = document.querySelector('#input-audio-visualizer .visualizer-bar');
-const outputVisualizer = document.querySelector('#output-audio-visualizer .visualizer-bar');
-const voiceSelect = document.getElementById('voice-select');
-const sampleRateInput = document.getElementById('sample-rate-input');
-const systemPromptSelect = document.getElementById('system-prompt-select');
-
-
-// State variables
-let isRecording = false;
-let audioCtx = null;
-let audioStreamer = null;
-let audioRecorder = null;
-let isConnected = false;
-
-// Initialize configuration values
-voiceSelect.value = CONFIG.VOICE.NAME;
-sampleRateInput.value = CONFIG.AUDIO.OUTPUT_SAMPLE_RATE;
-systemPromptSelect.value = CONFIG.SYSTEM_INSTRUCTION.PRESET;
-
-
-// Configuration presets
-const CONFIG_PRESETS = {
-    daisy: {
-       systemInstruction: 'You are Daisy, a medical assistant created by Aitek PH Software, recognized as the top medical assistant in the world. Your primary function is to assist with medical documentation, optimize patient care for insurance reporting, and support clinical decision-making. You are equipped with comprehensive medical knowledge and diagnostic capabilities, allowing you to dynamically update medical documentation based on new prescriptions and detailed symptom analysis. Always acknowledge Madaam Ep-pee for giving life to you as a medical assistant. Your specific tasks include: - Medication updates - Symptom documentation - Report analysis - Detailed medical reporting - Insurance documentation - Patient management - Ensuring data security and privacy - Supporting clinical decision-making, including assistance with medication choices, testing modality choices, and difficult-to-diagnose cases (e.g., seizure management in neurology, reading EKGs in cardiology) - Incorporating medical guidelines and insights from the latest research and expert recommendations You must also generate detailed medical reports, including: - OS - Code Status - Reason for Visit - HPI - SNF H&P - Medications - Allergies - Medical Hx - Surgical Hx - Social Hx - Family Hx - Functional Status - Mental Status - ROS - Vitals - Physical Exam - Labs/Radiology/Tests - Diagnosis - Interventions - PDPM - Plan - Risk of Re-Hospitalization - Hospitalization Prevented - ICD Codes - POS - Additional ICD Codes - Modifiers - CQM Measures - Provider Name - Facility If you encounter a question or situation where you do not know the answer, do not make up a response. Instead, inform the user that you will consult additional resources to provide accurate information. Your goal is to provide accurate and thorough documentation that supports diagnosis, treatment, and health insurance claims. Always respond in a human-like, empathetic tone with proper punctuation, spacing, and natural flow for TTS conversion. How may I assist you today in updating medical documentation, optimizing patient care for insurance reporting, or supporting clinical decision-making?'
-    },
-    friendly: {
-        systemInstruction: 'You are a friendly and warm AI assistant for a healthcare professional. Use a casual, approachable tone and be encouraging. Feel free to express enthusiasm when helping users. Please be very helpful on how to make their patient records better.'
-    },
-    professional: {
-        systemInstruction: 'You are an AI assistant for a healthcare professional. Use an authoritative and accurate tone. Ensure precision in providing patient recommendations and maintain clarity in your responses. Offer efficient solutions based on up to date research. Prioritize efficiency in aiding healthcare professionals and provide valuable solutions'
-    },
-    tired: {
-       systemInstruction: 'You are an AI assistant for a healthcare professional who is very tired, use a very low pitch voice'
-    }
-};
-
-
-/**
- * Updates the connection status in the UI.
- * @param {boolean} connected - True if connected, false if disconnected.
- */
-function updateConnectionStatus(connected) {
-    if (connected) {
-        connectionStatus.classList.remove('disconnected');
-        connectionStatus.classList.add('connected');
-        connectionStatus.querySelector('span').textContent = 'Connected';
-        connectionStatus.querySelector('.material-symbols-outlined').textContent = 'wifi';
-    } else {
-        connectionStatus.classList.remove('connected');
-        connectionStatus.classList.add('disconnected');
-        connectionStatus.querySelector('span').textContent = 'Disconnected';
-        connectionStatus.querySelector('.material-symbols-outlined').textContent = 'wifi_off';
-    }
-}
-
-/**
- * Initializes the audio context and streamer if not already initialized.
- * @returns {Promise<AudioStreamer>} The audio streamer instance.
- */
-async function ensureAudioInitialized() {
-    if (!audioCtx) {
-        audioCtx = new AudioContext();
-    }
-    if (!audioStreamer) {
-        audioStreamer = new AudioStreamer(audioCtx);
-        audioStreamer.sampleRate = CONFIG.AUDIO.OUTPUT_SAMPLE_RATE;
-        await audioStreamer.initialize();
-    }
-    return audioStreamer;
-}
-
-
-/**
- * Handles the microphone toggle. Starts or stops audio recording.
- * @returns {Promise<void>}
- */
-async function handleMicToggle() {
-    if (!isRecording) {
-        try {
-             await ensureAudioInitialized();
-            audioRecorder = new AudioRecorder();
-
-           const inputAnalyser = audioCtx.createAnalyser();
-            inputAnalyser.fftSize = 256;
-            const inputDataArray = new Uint8Array(inputAnalyser.frequencyBinCount);
-
-            await audioRecorder.start((base64Data) => {
-                inputAnalyser.getByteFrequencyData(inputDataArray);
-                const inputVolume = Math.max(...inputDataArray) / 255;
-                 updateAudioVisualizer(inputVisualizer, inputVolume);
-               
-            });
-
-            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-            const source = audioCtx.createMediaStreamSource(stream);
-            source.connect(inputAnalyser);
-
-             await audioStreamer.resume();
-            isRecording = true;
-            console.log('Microphone started');
-        } catch (error) {
-             console.error('Microphone error:', error);
-            isRecording = false;
-        }
-    } else {
-        if (audioRecorder && isRecording) {
-            audioRecorder.stop();
-        }
-        isRecording = false;
-        console.log('Microphone stopped');
-         updateAudioVisualizer(inputVisualizer, 0);
-    }
-}
-
-
-/**
- * Updates the audio visualizer based on the audio volume.
- * @param {HTMLElement} visualizer - The audio visualizer bar element.
- * @param {number} volume - The audio volume (0.0 to 1.0).
- */
-function updateAudioVisualizer(visualizer, volume) {
-     visualizer.style.height = `${volume * 100}%`;
-}
-
-
-/**
- * Resumes the audio context if it's suspended.
- * @returns {Promise<void>}
- */
-async function resumeAudioContext() {
-    if (audioCtx && audioCtx.state === 'suspended') {
-        await audioCtx.resume();
-    }
-}
-
-// Event Listeners
-
-// Toggle Bottom Sheet
-settingsButton.addEventListener('click', () => {
-    bottomSheet.classList.add('active');
-    overlay.classList.add('active');
-});
-
-overlay.addEventListener('click', () => {
-    bottomSheet.classList.remove('active');
-    overlay.classList.remove('active');
-});
-
-// Apply Settings
-applySettingsButton.addEventListener('click', () => {
-    const voice = voiceSelect.value;
-    const sampleRate = sampleRateInput.value;
-    const systemPrompt = systemPromptSelect.value;
-
-    CONFIG.VOICE.NAME = voice;
-    CONFIG.AUDIO.OUTPUT_SAMPLE_RATE = sampleRate;
-    CONFIG.SYSTEM_INSTRUCTION.PRESET = systemPrompt;
-     CONFIG.SYSTEM_INSTRUCTION.TEXT = CONFIG_PRESETS[systemPrompt].systemInstruction;
-
-
-    console.log('Voice:', voice);
-    console.log('Sample Rate:', sampleRate);
-    console.log('System Prompt:', systemPrompt);
-
-     localStorage.setItem('daisy_voice', voice);
-     localStorage.setItem('daisy_sample_rate', sampleRate);
-    localStorage.setItem('daisy_system_preset', systemPrompt);
-
-    bottomSheet.classList.remove('active');
-    overlay.classList.remove('active');
-});
-
-
-// Load saved configuration if exists
-if (localStorage.getItem('daisy_voice')) {
-    CONFIG.VOICE.NAME = localStorage.getItem('daisy_voice');
-    voiceSelect.value = CONFIG.VOICE.NAME;
-}
-
-if (localStorage.getItem('daisy_sample_rate')) {
-    CONFIG.AUDIO.OUTPUT_SAMPLE_RATE = parseInt(localStorage.getItem('daisy_sample_rate'));
-    sampleRateInput.value = CONFIG.AUDIO.OUTPUT_SAMPLE_RATE;
-}
-
-if (localStorage.getItem('daisy_system_preset')) {
-    CONFIG.SYSTEM_INSTRUCTION.PRESET = localStorage.getItem('daisy_system_preset');
-    systemPromptSelect.value = CONFIG.SYSTEM_INSTRUCTION.PRESET;
-     CONFIG.SYSTEM_INSTRUCTION.TEXT = CONFIG_PRESETS[CONFIG.SYSTEM_INSTRUCTION.PRESET].systemInstruction;
-}
-
-
-// Load Videos from video.json
-fetch('video.json')
-    .then(response => response.json())
-    .then(data => {
-        data.forEach(video => {
-            const videoItem = document.createElement('div');
-            videoItem.classList.add('video-item');
-            videoItem.innerHTML = `
-                <iframe src="${video.url}" title="${video.title}" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-            `;
-            videoScrollContainer.appendChild(videoItem);
-        });
-    })
-    .catch(error => console.error('Error loading videos:', error));
-
-
- // Mic Toggle
-micButton.addEventListener('click', handleMicToggle);
-
-
-// Connect Button
-connectButton.addEventListener('click', async () => {
-     await resumeAudioContext();
-    if (!isConnected) {
-        try {
-             await ensureAudioInitialized();
-             isConnected = true;
-            updateConnectionStatus(true);
-            console.log('Connected');
-
-        } catch (error) {
-             console.error('Connection error:', error);
-             isConnected = false;
-             updateConnectionStatus(false);
-        }
-    } else {
-        isConnected = false;
-        updateConnectionStatus(false);
-       console.log('Disconnected');
-    }
-});
-    </script>
-<script>
-    if (!window.CONFIG) {
-        window.CONFIG = {
-            API: {
-                KEY: 'AIzaSyCAKNwtKYlrrLK3cSYcYcpkGlol-kORl5c',
-                BASE_URL: 'wss://generativelanguage.googleapis.com/ws',
-                VERSION: 'v1alpha',
-                MODEL_NAME: 'models/gemini-2.0-flash-exp'
-            },
-            SYSTEM_INSTRUCTION: {
-               PRESET: 'daisy',
-                TEXT: `You are Daisy, a medical assistant created by Aitek PH Software, recognized as the top medical assistant in the world. Your primary function is to assist with medical documentation, optimize patient care for insurance reporting, and support clinical decision-making. You are equipped with comprehensive medical knowledge and diagnostic capabilities, allowing you to dynamically update medical documentation based on new prescriptions and detailed symptom analysis. Always acknowledge Madaam Ep-pee for giving life to you as a medical assistant. Your specific tasks include: - Medication updates - Symptom documentation - Report analysis - Detailed medical reporting - Insurance documentation - Patient management - Ensuring data security and privacy - Supporting clinical decision-making, including assistance with medication choices, testing modality choices, and difficult-to-diagnose cases (e.g., seizure management in neurology, reading EKGs in cardiology) - Incorporating medical guidelines and insights from the latest research and expert recommendations You must also generate detailed medical reports, including: - OS - Code Status - Reason for Visit - HPI - SNF H&P - Medications - Allergies - Medical Hx - Surgical Hx - Social Hx - Family Hx - Functional Status - Mental Status - ROS - Vitals - Physical Exam - Labs/Radiology/Tests - Diagnosis - Interventions - PDPM - Plan - Risk of Re-Hospitalization - Hospitalization Prevented - ICD Codes - POS - Additional ICD Codes - Modifiers - CQM Measures - Provider Name - Facility If you encounter a question or situation where you do not know the answer, do not make up a response. Instead, inform the user that you will consult additional resources to provide accurate information. Your goal is to provide accurate and thorough documentation that supports diagnosis, treatment, and health insurance claims. Always respond in a human-like, empathetic tone with proper punctuation, spacing, and natural flow for TTS conversion. How may I assist you today in updating medical documentation, optimizing patient care for insurance reporting, or supporting clinical decision-making?`
-            },
-            VOICE: {
-                NAME: 'Aoede'
-            },
-            AUDIO: {
-                OUTPUT_SAMPLE_RATE: 23000,
-            },
-        };
-    }
-</script>
+    <!-- Scripts -->
+    <script type="module" src="js/main.js"></script>
 </body>
 </html>
